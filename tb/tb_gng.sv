@@ -49,8 +49,8 @@ parameter N = 1000000;
 logic clk;
 logic rstn;
 logic ce;
-logic valid_out;
-logic [15:0] data_out;
+logic valid_out, valid_out2;
+logic [15:0] data_out, data2_out;
 
 
 // Instances
@@ -59,7 +59,28 @@ gng #(
    .INIT_Z2(64'd18445829279364155008),
    .INIT_Z3(64'd18436106298727503359)
 )
-u_gng (.*);
+u_gng (
+    .clk(clk),
+    .rstn(rstn),
+    .ce(ce),
+    .valid_out(valid_out),
+    .data_out(data_out)
+);
+
+gng #(
+   .INIT_Z1(64'd5030521883283424767),
+   .INIT_Z3(64'd18445829279364155008),
+   .INIT_Z2(64'd18436106298727503359)
+)
+u_gng2 (
+    .clk(clk),
+    .rstn(rstn),
+    .ce(ce),
+    .valid_out(valid_out2),
+    .data_out(data2_out)
+);
+
+
 
 
 // System signals
@@ -75,10 +96,11 @@ end
 
 
 // Main process
-int fpOut;
+int fpOut, fpOut2;
 
 initial begin
-    fpOut = $fopen("gng_data_out.txt", "w");
+    fpOut  = $fopen("../../../../gng_data_out.txt", "w");
+    fpOut2 = $fopen("../../../../gng_data2_out.txt", "w");
 
     ce = 0;
 
@@ -94,6 +116,7 @@ initial begin
 
     #(ClkPeriod*20)
     $fclose(fpOut);
+    $fclose(fpOut2);
     $stop;
 end
 
@@ -101,7 +124,9 @@ end
 // Record data
 always_ff @ (negedge clk) begin
     if (valid_out)
-        $fwrite(fpOut, "%0d\n", $signed(data_out));
+        $fwrite(fpOut, "%0d\n", $signed(data_out));        
+    if (valid_out2)
+        $fwrite(fpOut2, "%0d\n", $signed(data2_out));
 end
 
 
