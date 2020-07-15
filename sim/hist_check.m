@@ -1,14 +1,14 @@
 clear;
-Nbins = 400;
+Nbins = 100;
+centers = 8*(-Nbins/2:Nbins/2-1)/Nbins;
 
 d1 = load("-ascii","gng_data_out.txt");
 d1 = d1/(2^11);
 
-d2 = load("-ascii","gng_data2_out.txt");
-d2 = d2/(2^11);
+[dd,xx] = hist(d1, centers);
 
-figure(1);
-hist(d1, Nbins);
+[gg,xx] = hist(randn(1000000,1), centers);
 
-figure(2);
-hist(d2, Nbins);
+stem(xx,dd, 'r*'); 
+hold on;
+stem(xx,gg, 'b');
